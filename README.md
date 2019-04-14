@@ -63,6 +63,7 @@ type Response struct {
 func main() {
 	var res Response
 
+    req := tpshp.NewRequest()
 	req.AddCommand("system", "get_sysinfo", struct{}, &res)
 
 	cli := tpshp.New("10.8.1.103")
