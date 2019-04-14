@@ -34,7 +34,7 @@ func RecvRaw(conn io.Reader) ([]byte, error) {
 
 	var payload = make([]byte, length)
 
-	if n, err := conn.Read(payload); n != int(length) {
+	if n, err := conn.Read(payload); n != int(length) || n == 0 {
 		return nil, err
 	}
 
