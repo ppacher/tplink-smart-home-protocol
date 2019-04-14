@@ -41,3 +41,36 @@ $ tpshp -i 10.8.1.103 system.get_sysinfo {} | jq .
 }
 
 ```
+
+# Library usage
+
+```golang
+package main
+
+import (
+	"context"
+	"fmt"
+	"strings"
+
+	tpshp "github.com/ppacher/tplink-smart-home-protocol"
+)
+
+type Response struct {
+    Alias string `json:"alias"`
+    RelayState int `json:"relay_state"`
+}
+
+func main() {
+	var res Response
+
+	req.AddCommand("system", "get_sysinfo", struct{}, &res)
+
+	cli := tpshp.New("10.8.1.103")
+	if err := cli.Call(context.Background(), req); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("%s: state=%d", res.Alias, res.RelayState)
+}
+
+```
