@@ -46,7 +46,7 @@ func (r *Request) Responses() map[string]map[string]interface{} {
 }
 
 // AddCommand adds a command to the request
-func (r *Request) AddCommand(namespace string, command string, payload interface{}, response interface{}) {
+func (r *Request) AddCommand(namespace string, command string, payload interface{}, response interface{}) *Request {
 	if r.commands[namespace] == nil {
 		r.commands[namespace] = make(map[string]interface{})
 	}
@@ -60,6 +60,8 @@ func (r *Request) AddCommand(namespace string, command string, payload interface
 	}
 
 	r.commands[namespace][command] = payload
+
+	return r
 }
 
 // MarshalJSON implements json.Marshaler and returns the JSON representation of the
