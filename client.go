@@ -11,6 +11,8 @@ import (
 type Client interface {
 	// Call sends one or more commands to the TP-Link device
 	Call(context.Context, *Request) error
+
+	Send(ctx context.Context, payload []byte) ([]byte, error)
 }
 
 // New creates a new TP-Link Smart-Home client for the given IP address. The port defaults to 9999.
@@ -33,6 +35,21 @@ type client struct {
 	port uint16
 }
 
+func (cli *client) Send(ctx context.Context, payload []byte) ([]byte, error) {
+	// connect to the device
+	conn, err := (&net.Dialer{}).DialContext(ctx, "tcp", fmt.Sprintf("%s:%d", cli.ip, cli.port))
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+
+	if err := SendRaw(conn, payload); err != nil {
+		return nil, err
+	}
+
+	return RecvRaw(conn)
+}
+
 // call sens one or more command requests to the TP-Link device
 func (cli *client) Call(ctx context.Context, req *Request) error {
 	payload, err := json.Marshal(req)
@@ -45,6 +62,7 @@ func (cli *client) Call(ctx context.Context, req *Request) error {
 	if err != nil {
 		return err
 	}
+	defer conn.Close()
 
 	if err := SendRaw(conn, payload); err != nil {
 		return err
